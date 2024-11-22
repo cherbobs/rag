@@ -1,47 +1,150 @@
-# SuperEasy 100% Local RAG with Ollama + Email RAG
+# Projet RAG avec Ollama
 
-### YouTube Tutorials
-- https://www.youtube.com/watch?v=Oe-7dGDyzPM
-- https://www.youtube.com/watch?v=vFGng_3hDRk
-### Latest YouTube Updated Features
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/0X7raD1kISQ/0.jpg)](https://www.youtube.com/watch?v=0X7raD1kISQ)
-### Setup
-1. git clone https://github.com/AllAboutAI-YT/easy-local-rag.git
-2. cd dir
-3. pip install -r requirements.txt
-4. Install Ollama (https://ollama.com/download)
-5. ollama pull llama3 (etc)
-6. ollama pull mxbai-embed-large
-7. run upload.py (pdf, .txt, JSON)
-8. run localrag.py (with query re-write)
-9. run localrag_no_rewrite.py (no query re-write)
+Ce projet implémente un système de **génération augmentée par récupération (RAG)** en utilisant **Ollama** pour répondre à des questions basées sur des documents. Les utilisateurs peuvent interroger un modèle directement ou enrichir leurs questions avec un contexte extrait de documents locaux.
 
-### Email RAG Setup
-1. git clone https://github.com/AllAboutAI-YT/easy-local-rag.git
-2. cd dir
-3. pip install -r requirements.txt
-4. Install Ollama (https://ollama.com/download)
-5. ollama pull llama3 (etc)
-6. ollama pull mxbai-embed-large
-7. set YOUR email logins in .env (for gmail create app password (video))
-9. python collect_emails.py to download your emails
-10. python emailrag2.py to talk to your emails
+---
 
-### Latest Updates
-- Added Email RAG Support (v1.3)
-- Upload.py (v1.2)
-   - replaced /n/n with /n 
-- New embeddings model mxbai-embed-large from ollama (1.2)
-- Rewrite query function to improve retrival on vauge questions (1.2)
-- Pick your model from the CLI (1.1)
-  - python localrag.py --model mistral (llama3 is default) 
-- Talk in a true loop with conversation history (1.1)
-   
-### My YouTube Channel
-https://www.youtube.com/c/AllAboutAI
+## **Table des matières**
+- [Prérequis](#prérequis)
+- [Structure des fichiers](#structure-des-fichiers)
+- [Utilisation](#utilisation)
+  - [Mode sans RAG](#mode-sans-rag)
+  - [Mode avec RAG](#mode-avec-rag)
+- [Commandes utiles](#commandes-utiles)
+- [Dépannage](#dépannage)
 
-### What is RAG?
-RAG is a way to enhance the capabilities of LLMs by combining their powerful language understanding with targeted retrieval of relevant information from external sources often with using embeddings in vector databases, leading to more accurate, trustworthy, and versatile AI-powered applications
+---
 
-### What is Ollama?
-Ollama is an open-source platform that simplifies the process of running powerful LLMs locally on your own machine, giving users more control and flexibility in their AI projects. https://www.ollama.com
+## **Prérequis**
+
+Avant d'exécuter le projet, assurez-vous que les conditions suivantes sont remplies :
+
+1. **Environnement Python** :
+   - Installez Python 3.8 ou une version ultérieure.
+   - Créez un environnement virtuel :
+     ```bash
+     python -m venv .venv
+     source .venv/bin/activate  # Sur Windows : .venv\Scripts\activate
+     ```
+
+2. **Installation des dépendances** :
+   Installez les dépendances nécessaires via `pip` :
+   ```bash
+   pip install torch ollama numpy
+   ```
+
+3. **Serveur Ollama actif** :
+   Assurez-vous que le serveur Ollama est démarré avant d'exécuter le script :
+   ```bash
+   ollama serve
+
+4. **Modèles installés sur Ollama** :
+   Vérifiez les modèles disponibles sur le serveur Ollama :
+   ```bash
+   ollama list
+
+   Téléchargez les modèles nécessaires si besoin :
+   ```bash
+   ollama pull llama2
+
+
+## **Structure des fichiers**
+* **`localrag.py`** : Le script principal, permettant deux modes d'utilisation :  
+  * **Sans RAG (`--mode no-rag`)** : Pose des questions directement au modèle.  
+  * **Avec RAG (`--mode rag`)** : Utilise les documents locaux pour enrichir les réponses.  
+* **`vault.txt`** : Un fichier texte contenant les documents locaux utilisés dans le mode **RAG**. Chaque ligne représente un document ou un fragment.
+
+## **Utilisation**
+
+### **Mode sans RAG**
+
+Dans ce mode, les questions sont posées directement au modèle, sans utiliser de contexte supplémentaire :
+
+bash
+
+`python localrag.py --mode no-rag`
+
+### **Mode avec RAG**
+
+Dans ce mode, les réponses sont générées en utilisant le contenu de `vault.txt` comme contexte :
+
+bash
+
+`python localrag.py --mode rag`
+
+---
+
+## **Commandes utiles**
+
+### **Lister les modèles disponibles**
+
+bash
+
+`ollama list`
+
+### **Télécharger un modèle**
+
+bash
+
+`ollama pull <nom_du_modèle>`
+
+Exemple :
+
+bash
+
+`ollama pull llama2`
+
+### **Tester un modèle directement**
+
+bash
+
+`ollama generate -m <nom_du_modèle> "<votre_question>"`
+
+Exemple :
+
+bash
+
+`ollama generate -m llama2 "Quel est le step ?"`
+
+---
+
+## **Dépannage**
+
+### **Problème : Port déjà utilisé**
+
+Si le port `11434` est occupé, identifiez le processus qui l'utilise :
+
+bash
+
+`netstat -ano | findstr :11434`
+
+Terminez le processus correspondant avec son PID :
+
+bash
+
+`taskkill /PID <PID> /F`
+
+Relancez ensuite le serveur Ollama :
+
+bash
+
+`ollama serve`
+
+### **Problème : Modèle introuvable**
+
+Si un modèle comme `llama2` ou `mistral` n'est pas trouvé :
+
+Assurez-vous que le modèle est téléchargé :  
+bash
+
+`ollama pull llama2`
+
+Vérifiez que le nom du modèle dans `localrag.py` correspond exactement à celui listé par `ollama list`.
+
+---
+
+## **Contributeurs**
+
+* Développeur : \[cherbobs\]  
+* Contact : \[e_cherbonnier@hetic.eu\]
+
